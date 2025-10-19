@@ -27,7 +27,7 @@ Rick and Morty Character API with search and caching.
 
 4. **Create database**
 
-{2455C787-3A9D-4FB0-9E2B-79449435FB21}.png
+<img width="360" height="353" alt="{6270D27E-89B6-4F31-A01E-3A7CE01E4A59}" src="https://github.com/user-attachments/assets/e9f0cf15-6b80-4d1a-9766-05d0eace0f81" />
 
 ```sh
 pnpm run db:create
