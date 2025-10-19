@@ -26,9 +26,13 @@ Rick and Morty Character API with search and caching.
    ```
 
 4. **Create database**
-   ```sh
-   pnpm run db:create
-   ```
+
+{2455C787-3A9D-4FB0-9E2B-79449435FB21}.png
+
+```sh
+pnpm run db:create
+```
+
 5. **Run migration files**
 
    ```sh
@@ -54,8 +58,77 @@ Rick and Morty Character API with search and caching.
    ```
 
 9. **For development (with hot-reloading)**
-   ```sh
-   pnpm dev
-   ```
 
-The API should now be running on [http://localhost:3000](http://localhost:3000) (or your configured port).
+```sh
+pnpm dev
+```
+
+The API should now be running on [http://localhost:4000](http://localhost:4000) (or your configured port).
+
+## Using the GraphQL API to Search Characters
+
+Once the server is running, you can access the GraphQL at POST [http://localhost:4000/graphql](http://localhost:4000/graphql).
+
+**Example Query to Search Characters**
+
+You can search characters using filters such as `name`, `status`, `species`, `gender`, `origin_id`, as well as pagination options `limit` and `offset`.
+
+```graphql
+query SearchCharacters {
+  characters(
+    name: "Rick"
+    status: "Alive"
+    species: "Human"
+    gender: "Male"
+    limit: 10
+    offset: 0
+  ) {
+    id
+    api_id
+    name
+    status
+    species
+    gender
+    origin {
+      id
+      name
+    }
+  }
+}
+```
+
+**Available fields and filters:**
+
+- `name` (String): Filter by character name (partial match)
+- `status` (String): Filter by status (`Alive`, `Dead`, etc.)
+- `species` (String): Filter by species (e.g., `Human`, `Alien`)
+- `gender` (String): Filter by gender
+- `origin_id` (Int): Filter by origin's ID
+- `limit` (Int): Number of results to return (default: 20)
+- `offset` (Int): Number of results to skip (for pagination)
+
+**Other Queries**
+
+- Get a character by database ID:
+
+  ```graphql
+  query {
+    character(id: 1) {
+      id
+      name
+    }
+  }
+  ```
+
+- Get a character by API ID:
+
+  ```graphql
+  query {
+    characterByApiId(api_id: 1) {
+      id
+      name
+    }
+  }
+  ```
+
+You can interact with the API using tools like [Apollo Studio Explorer](https://studio.apollographql.com/sandbox/explorer) or any GraphQL client.
