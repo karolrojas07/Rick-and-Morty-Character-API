@@ -2,8 +2,6 @@
 
 Rick and Morty Character API with search and caching.
 
-// Create Installation steps
-
 ## Installation
 
 1. **Clone the repository**
@@ -27,19 +25,35 @@ Rick and Morty Character API with search and caching.
    cp .env.example .env
    ```
 
-4. **Build the project**
+4. **Create database**
+   ```sh
+   pnpm run db:create
+   ```
+5. **Run migration files**
+
+   ```sh
+   pnpm run db:migrate
+   ```
+
+6. **Run seeds**
+
+   ```sh
+   pnpm run db:seed
+   ```
+
+7. **Build the project**
 
    ```sh
    pnpm run build
    ```
 
-5. **Start the server**
+8. **Start the server**
 
    ```sh
    pnpm start
    ```
 
-6. **For development (with hot-reloading)**
+9. **For development (with hot-reloading)**
    ```sh
    pnpm dev
    ```

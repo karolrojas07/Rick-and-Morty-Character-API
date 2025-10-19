@@ -33,7 +33,7 @@ module.exports = {
       },
       origin_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'origins',
           key: 'id',
