@@ -17,6 +17,5 @@ export const createGraphQLServer = async (httpServer: any) => {
 };
 
 export const applyGraphQLMiddleware = (app: any, server: any) => {
-  // Ensure JSON body parsing is applied for GraphQL route specifically
-  app.use("/graphql", express.json(), expressMiddleware(server));
+  app.use("/graphql", expressMiddleware(server));
 };

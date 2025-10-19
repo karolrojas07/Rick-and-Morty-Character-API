@@ -9,22 +9,18 @@ import { createGraphQLServer, applyGraphQLMiddleware } from "./graphql/server";
 const app = express();
 const httpServer = createServer(app);
 
+app.use(express.json());
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(compression());
-app.use(express.json());
 
 // Initialize GraphQL server
-let graphQLServer: any;
-
-const initializeGraphQL = async () => {
-  graphQLServer = await createGraphQLServer(httpServer);
+export const startServer = async () => {
+  const graphQLServer = await createGraphQLServer(httpServer);
   applyGraphQLMiddleware(app, graphQLServer);
+  return { app, httpServer };
 };
-
-// Initialize GraphQL when app starts
-initializeGraphQL();
 
 export default app;
 export { httpServer };
