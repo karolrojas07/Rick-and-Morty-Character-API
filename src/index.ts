@@ -1,7 +1,8 @@
-import app from "./app";
+import app, { httpServer } from "./app";
 
-const PORT = process.env["PORT"] || 3000;
+const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+httpServer.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
 });
