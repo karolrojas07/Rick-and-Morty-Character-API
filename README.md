@@ -2,6 +2,15 @@
 
 Rick and Morty Character API with search and caching.
 
+## Pre-requirements
+
+Make sure you have the following installed before proceeding:
+
+- **Node.js** (version 18.x or later recommended)
+- **pnpm** (version 7.x or later recommended)
+- **PostgreSQL** (for persistent storage)
+- **Redis** (for caching)
+
 ## Installation
 
 1. **Clone the repository**
