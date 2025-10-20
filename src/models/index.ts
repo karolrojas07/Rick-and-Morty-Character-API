@@ -1,6 +1,6 @@
 import sequelize from "../config/sequelize";
-import { Character } from "./Character";
-import { Origin } from "./Origin";
+import { Character } from "./character";
+import { Origin } from "./origin";
 
 // Initialize models
 Character;

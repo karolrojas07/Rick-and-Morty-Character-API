@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import { cacheService } from "../../services/cache.service";
 import { LogExecutionTime } from "../../utils/decorators";
 
-class CharacterResolver {
+export class CharacterResolver {
   @LogExecutionTime
   async characters(
     _: any,
