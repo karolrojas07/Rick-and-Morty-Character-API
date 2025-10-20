@@ -187,7 +187,7 @@ describe("CharacterResolver", () => {
 
       const result = await characterResolver.characters({}, { gender: "Male" });
 
-      expect(result).toHaveLength(5); // Rick, Morty, Jerry, Birdperson, Squanchy, Mr. Meeseeks
+      expect(result).toHaveLength(6); // Rick, Morty, Jerry, Birdperson, Squanchy, Mr. Meeseeks
       expect((result as any).every((char: any) => char.gender === "Male")).toBe(
         true
       );
@@ -221,7 +221,7 @@ describe("CharacterResolver", () => {
         }
       );
 
-      expect(result).toHaveLength(3); // Morty, Summer, Jerry, Beth Smith
+      expect(result).toHaveLength(4); // Morty, Summer, Jerry, Beth Smith
       expect(
         (result as any).every(
           (char: any) => char.name.includes("Smith") && char.status === "Alive"
