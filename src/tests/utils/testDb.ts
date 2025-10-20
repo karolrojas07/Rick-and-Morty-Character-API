@@ -1,19 +1,10 @@
 import { Sequelize, QueryTypes } from "sequelize";
-import { Character, Origin } from "../../models";
+import initModels, { sequelize as appSequelize } from "../../models";
 
-// Create a test database connection
-const testSequelize = new Sequelize({
-  dialect: "postgres",
-  host: process.env.DB_HOST || "localhost",
-  port: parseInt(process.env.DB_PORT || "5432"),
-  database: process.env.DB_NAME_TEST || "rick_and_morty_test",
-  username: process.env.DB_USERNAME || "postgres",
-  password: process.env.DB_PASSWORD || "password",
-  logging: false, // Disable SQL logging during tests
-});
+// Don't initialize testSequelize here - do it after DB creation
+let testSequelize: Sequelize | null = null;
 
-// Test data
-export const testOrigins = [
+const testOrigins = [
   {
     api_id: 1,
     name: "Earth C-137",
@@ -35,7 +26,7 @@ export const testCharacters = [
     status: "Alive",
     species: "Human",
     gender: "Male",
-    origin_id: 1, // Earth C-137
+    origin_id: 1,
   },
   {
     api_id: 2,
@@ -43,7 +34,7 @@ export const testCharacters = [
     status: "Alive",
     species: "Human",
     gender: "Male",
-    origin_id: 1, // Earth C-137
+    origin_id: 1,
   },
   {
     api_id: 3,
@@ -51,7 +42,7 @@ export const testCharacters = [
     status: "Alive",
     species: "Human",
     gender: "Female",
-    origin_id: 1, // Earth C-137
+    origin_id: 1,
   },
   {
     api_id: 4,
@@ -59,7 +50,7 @@ export const testCharacters = [
     status: "Alive",
     species: "Human",
     gender: "Male",
-    origin_id: 1, // Earth C-137
+    origin_id: 1,
   },
   {
     api_id: 5,
@@ -67,7 +58,7 @@ export const testCharacters = [
     status: "Alive",
     species: "Human",
     gender: "Female",
-    origin_id: 1, // Earth C-137
+    origin_id: 1,
   },
   {
     api_id: 6,
@@ -75,7 +66,7 @@ export const testCharacters = [
     status: "Dead",
     species: "Bird-Person",
     gender: "Male",
-    origin_id: 2, // Unknown
+    origin_id: 2,
   },
   {
     api_id: 7,
@@ -83,7 +74,7 @@ export const testCharacters = [
     status: "Unknown",
     species: "Cat-Person",
     gender: "Male",
-    origin_id: 3, // Citadel of Ricks
+    origin_id: 3,
   },
   {
     api_id: 8,
@@ -91,36 +82,40 @@ export const testCharacters = [
     status: "Unknown",
     species: "Meeseeks",
     gender: "Male",
-    origin_id: 2, // Unknown
+    origin_id: 2,
   },
 ];
 
 /**
  * Create the test database if it doesn't exist
  */
-export async function createTestDatabase(): Promise<void> {
+async function createTestDatabase(): Promise<void> {
   const dbName = process.env.DB_NAME_TEST || "rick_and_morty_test";
 
-  // Connect to PostgreSQL without specifying a database
   const adminSequelize = new Sequelize({
     dialect: "postgres",
     host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432"),
-    database: "postgres", // Connect to default postgres database
+    port: parseInt(process.env.DB_PORT || "5432", 10),
+    database: "postgres",
     username: process.env.DB_USERNAME || "postgres",
     password: process.env.DB_PASSWORD || "password",
     logging: false,
   });
 
   try {
-    // Check if database exists
+    await adminSequelize.authenticate();
+    console.log("Connected to PostgreSQL server");
+
+    // Use parameterized query to avoid SQL injection
     const result = await adminSequelize.query(
-      `SELECT 1 FROM pg_database WHERE datname = '${dbName}'`,
-      { type: QueryTypes.SELECT }
+      "SELECT 1 FROM pg_database WHERE datname = :dbName",
+      {
+        replacements: { dbName },
+        type: QueryTypes.SELECT,
+      }
     );
 
-    // Create database if it doesn't exist
-    if (result.length == 0) {
+    if (result.length === 0) {
       await adminSequelize.query(`CREATE DATABASE "${dbName}"`);
       console.log(`Test database '${dbName}' created successfully`);
     } else {
@@ -135,15 +130,54 @@ export async function createTestDatabase(): Promise<void> {
 }
 
 /**
+ * Initialize test sequelize connection
+ */
+function initializeTestSequelize(): Sequelize {
+  if (testSequelize) {
+    return testSequelize;
+  }
+
+  testSequelize = new Sequelize({
+    dialect: "postgres",
+    host: process.env.DB_HOST || "localhost",
+    port: parseInt(process.env.DB_PORT || "5432", 10),
+    database: process.env.DB_NAME_TEST || "rick_and_morty_test",
+    username: process.env.DB_USERNAME || "postgres",
+    password: process.env.DB_PASSWORD || "password",
+    logging: false,
+  });
+
+  return testSequelize;
+}
+
+/**
  * Initialize the test database
  * This should be called in beforeAll hooks
  */
 export async function initializeTestDb(): Promise<void> {
-  // Create the test database first
   await createTestDatabase();
 
-  // Sync the database
-  await testSequelize.sync({ force: true });
+  const sequelize = initializeTestSequelize();
+
+  // Test the connection
+  try {
+    await sequelize.authenticate();
+    console.log("Test database connection established");
+  } catch (error) {
+    console.error("Failed to connect to test database:", error);
+    throw error;
+  }
+
+  // Initialize models and sync
+  const { Character, Origin } = initModels(sequelize);
+
+  try {
+    await sequelize.sync({ force: true });
+    console.log("Test database synchronized");
+  } catch (error) {
+    console.error("Error syncing test database:", error);
+    throw error;
+  }
 }
 
 /**
@@ -151,11 +185,17 @@ export async function initializeTestDb(): Promise<void> {
  * This should be called in beforeEach hooks
  */
 export async function seedTestData(): Promise<void> {
-  // Create origins first
-  Origin.bulkCreate(testOrigins);
+  const sequelize = initializeTestSequelize();
+  const { Character, Origin } = initModels(sequelize);
 
-  // Create characters
-  Character.bulkCreate(testCharacters);
+  try {
+    await Origin.bulkCreate(testOrigins);
+    await Character.bulkCreate(testCharacters);
+    console.log("Test data seeded successfully");
+  } catch (error) {
+    console.error("Error seeding test data:", error);
+    throw error;
+  }
 }
 
 /**
@@ -163,22 +203,38 @@ export async function seedTestData(): Promise<void> {
  * This should be called in afterEach hooks
  */
 export async function clearTestData(): Promise<void> {
-  Character.destroy({ where: {}, force: true });
-  Origin.destroy({ where: {}, force: true });
+  const sequelize = initializeTestSequelize();
+
+  try {
+    // Disable foreign key constraints temporarily
+    await sequelize.query("SET session_replication_role = 'replica'");
+    
+    // Truncate child table first (characters references origins)
+    await sequelize.query("TRUNCATE TABLE characters RESTART IDENTITY CASCADE");
+    // Then truncate parent table
+    await sequelize.query("TRUNCATE TABLE origins RESTART IDENTITY CASCADE");
+    
+    // Re-enable foreign key constraints
+    await sequelize.query("SET session_replication_role = 'origin'");
+    
+    console.log("Test data cleared");
+  } catch (error) {
+    console.error("Error clearing test data:", error);
+    throw error;
+  }
 }
 
 /**
- * Drop the test database (optional cleanup)
+ * Drop the test database
  */
 export async function dropTestDatabase(): Promise<void> {
   const dbName = process.env.DB_NAME_TEST || "rick_and_morty_test";
 
-  // Connect to PostgreSQL without specifying a database
   const adminSequelize = new Sequelize({
     dialect: "postgres",
     host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432"),
-    database: "postgres", // Connect to default postgres database
+    port: parseInt(process.env.DB_PORT || "5432", 10),
+    database: "postgres",
     username: process.env.DB_USERNAME || "postgres",
     password: process.env.DB_PASSWORD || "password",
     logging: false,
@@ -200,13 +256,21 @@ export async function dropTestDatabase(): Promise<void> {
  * This should be called in afterAll hooks
  */
 export async function closeTestDb(): Promise<void> {
-  await testSequelize.close();
+  if (testSequelize) {
+    await testSequelize.close();
+    testSequelize = null;
+    console.log("Test database connection closed");
+  }
 }
 
 /**
  * Get the test sequelize instance
- * Use this in tests when you need direct database access
  */
 export function getTestSequelize(): Sequelize {
+  if (!testSequelize) {
+    throw new Error(
+      "Test database not initialized. Call initializeTestDb() first."
+    );
+  }
   return testSequelize;
 }

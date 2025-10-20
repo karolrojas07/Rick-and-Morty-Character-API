@@ -36,11 +36,11 @@ Make sure you have the following installed before proceeding:
 
 4. **Create database**
 
-<img width="360" height="353" alt="{6270D27E-89B6-4F31-A01E-3A7CE01E4A59}" src="https://github.com/user-attachments/assets/e9f0cf15-6b80-4d1a-9766-05d0eace0f81" />
+    <img width="360" height="353" alt="{6270D27E-89B6-4F31-A01E-3A7CE01E4A59}" src="https://github.com/user-attachments/assets/e9f0cf15-6b80-4d1a-9766-05d0eace0f81" />
 
-```sh
-pnpm run db:create
-```
+    ```sh
+    pnpm run db:create
+    ```
 
 5. **Run migration files**
 
@@ -68,9 +68,9 @@ pnpm run db:create
 
 9. **For development (with hot-reloading)**
 
-```sh
-pnpm dev
-```
+    ```sh
+    pnpm dev
+    ```
 
 The API should now be running on [http://localhost:4000](http://localhost:4000) (or your configured port).
 

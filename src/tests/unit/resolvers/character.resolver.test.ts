@@ -24,6 +24,7 @@ describe("CharacterResolver", () => {
   let characterResolver: CharacterResolver;
 
   beforeAll(async () => {
+    process.env["NODE_ENV"] = "test";
     await initializeTestDb();
   });
 
@@ -41,6 +42,7 @@ describe("CharacterResolver", () => {
 
   afterAll(async () => {
     await closeTestDb();
+    process.env["NODE_ENV"] = "development";
   });
 
   describe("characters()", () => {
@@ -185,7 +187,7 @@ describe("CharacterResolver", () => {
 
       const result = await characterResolver.characters({}, { gender: "Male" });
 
-      expect(result).toHaveLength(5); // Rick, Morty, Jerry, Birdperson, Squanchy, Mr. Meeseeks
+      expect(result).toHaveLength(6); // Rick, Morty, Jerry, Birdperson, Squanchy, Mr. Meeseeks
       expect((result as any).every((char: any) => char.gender === "Male")).toBe(
         true
       );
@@ -219,7 +221,7 @@ describe("CharacterResolver", () => {
         }
       );
 
-      expect(result).toHaveLength(3); // Morty, Summer, Jerry, Beth Smith
+      expect(result).toHaveLength(4); // Morty, Summer, Jerry, Beth Smith
       expect(
         (result as any).every(
           (char: any) => char.name.includes("Smith") && char.status === "Alive"
@@ -317,8 +319,12 @@ describe("CharacterResolver", () => {
     it("should return null when character not found", async () => {
       mockedCacheService.getCachedData.mockResolvedValue(null);
       mockedCacheService.generateCacheKey.mockReturnValue("character:id:999");
-
-      const result = await characterResolver.character({}, { id: 999 });
+      let result: any;
+      try {
+        result = await characterResolver.character({}, { id: 999 });
+      } catch (error) {
+        console.error(error);
+      }
 
       expect(result).toBeNull();
       expect(mockedCacheService.setCachedData).not.toHaveBeenCalled();
