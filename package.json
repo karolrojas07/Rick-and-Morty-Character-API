@@ -13,7 +13,10 @@
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
     "db:seed": "npx sequelize-cli db:seed:all",
     "db:seed:undo": "npx sequelize-cli db:seed:undo:all",
-    "db:reset": "npm run db:migrate:undo && npm run db:migrate && npm run db:seed"
+    "db:reset": "pnpm run db:migrate:undo && pnpm run db:migrate && pnpm run db:seed",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "Rick and Morty",
@@ -50,13 +53,16 @@
     "@types/express": "^5.0.3",
     "@types/graphql": "^14.5.0",
     "@types/helmet": "^4.0.0",
+    "@types/jest": "^30.0.0",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.8.1",
     "@types/pg": "^8.15.5",
-    "@types/sequelize": "^6.12.0",
     "@types/redis": "^4.0.11",
+    "@types/sequelize": "^6.12.0",
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10",
     "sequelize-cli": "^6.6.3",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

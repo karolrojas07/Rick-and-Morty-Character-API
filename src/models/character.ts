@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/sequelize";
-import { Origin } from "./Origin";
+import { Origin } from "./origin";
 
 interface CharacterAttributes {
   id: number;
