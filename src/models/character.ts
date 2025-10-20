@@ -1,5 +1,4 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../config/sequelize";
+import { DataTypes, Model, Optional, Sequelize } from "sequelize";
 import { Origin } from "./origin";
 
 interface CharacterAttributes {
@@ -33,50 +32,52 @@ export class Character
   public origin?: Origin;
 }
 
-Character.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    api_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: true,
-    },
-    status: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-    },
-    species: {
-      type: DataTypes.STRING(128),
-      allowNull: false,
-    },
-    gender: {
-      type: DataTypes.STRING(64),
-      allowNull: false,
-    },
-    name: {
-      type: DataTypes.STRING(128),
-      allowNull: false,
-    },
-    origin_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: Origin,
-        key: "id",
+export function defineCharacter(sequelize: Sequelize) {
+  Character.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      api_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: true,
+      },
+      status: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+      },
+      species: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+      },
+      gender: {
+        type: DataTypes.STRING(64),
+        allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+      },
+      origin_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "origins",
+          key: "id",
+        },
       },
     },
-  },
-  {
-    sequelize,
-    tableName: "characters",
-    timestamps: true,
-  }
-);
+    {
+      sequelize,
+      tableName: "characters",
+      timestamps: true,
+    }
+  );
 
-// Define associations
-Character.belongsTo(Origin, { foreignKey: "origin_id", as: "origin" });
-Origin.hasMany(Character, { foreignKey: "origin_id", as: "characters" });
+  return Character;
+}
+
+export default defineCharacter;

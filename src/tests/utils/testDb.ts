@@ -1,5 +1,5 @@
 import { Sequelize, QueryTypes } from "sequelize";
-import { Character, Origin } from "../../models";
+import initModels, { sequelize as appSequelize } from "../../models";
 
 // Don't initialize testSequelize here - do it after DB creation
 let testSequelize: Sequelize | null = null;
@@ -168,6 +168,9 @@ export async function initializeTestDb(): Promise<void> {
     throw error;
   }
 
+  // Initialize models and sync
+  const { Character, Origin } = initModels(sequelize);
+
   try {
     await sequelize.sync({ force: true });
     console.log("Test database synchronized");
@@ -183,6 +186,7 @@ export async function initializeTestDb(): Promise<void> {
  */
 export async function seedTestData(): Promise<void> {
   const sequelize = initializeTestSequelize();
+  const { Character, Origin } = initModels(sequelize);
 
   try {
     await Origin.bulkCreate(testOrigins);
