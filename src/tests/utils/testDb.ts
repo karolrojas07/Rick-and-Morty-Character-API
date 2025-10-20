@@ -4,11 +4,11 @@ import { Character, Origin } from "../../models";
 // Create a test database connection
 const testSequelize = new Sequelize({
   dialect: "postgres",
-  host: process.env.DB_HOST || "localhost",
-  port: parseInt(process.env.DB_PORT || "5432"),
-  database: process.env.DB_NAME_TEST || "rick_and_morty_test",
-  username: process.env.DB_USERNAME || "postgres",
-  password: process.env.DB_PASSWORD || "password",
+  host: process.env["DB_HOST"] || "localhost",
+  port: parseInt(process.env["DB_PORT"] || "5432"),
+  database: process.env["DB_NAME_TEST"] || "rick_and_morty_test",
+  username: process.env["DB_USERNAME"] || "postgres",
+  password: process.env["DB_PASSWORD"] || "password",
   logging: false, // Disable SQL logging during tests
 });
 
@@ -99,16 +99,16 @@ export const testCharacters = [
  * Create the test database if it doesn't exist
  */
 export async function createTestDatabase(): Promise<void> {
-  const dbName = process.env.DB_NAME_TEST || "rick_and_morty_test";
+  const dbName = process.env["DB_NAME_TEST"] || "rick_and_morty_test";
 
   // Connect to PostgreSQL without specifying a database
   const adminSequelize = new Sequelize({
     dialect: "postgres",
-    host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432"),
+    host: process.env["DB_HOST"] || "localhost",
+    port: parseInt(process.env["DB_PORT"] || "5432"),
     database: "postgres", // Connect to default postgres database
-    username: process.env.DB_USERNAME || "postgres",
-    password: process.env.DB_PASSWORD || "password",
+    username: process.env["DB_USERNAME"] || "postgres",
+    password: process.env["DB_PASSWORD"] || "password",
     logging: false,
   });
 
@@ -152,10 +152,10 @@ export async function initializeTestDb(): Promise<void> {
  */
 export async function seedTestData(): Promise<void> {
   // Create origins first
-  Origin.bulkCreate(testOrigins);
+  await Origin.bulkCreate(testOrigins);
 
   // Create characters
-  Character.bulkCreate(testCharacters);
+  await Character.bulkCreate(testCharacters);
 }
 
 /**
@@ -163,8 +163,8 @@ export async function seedTestData(): Promise<void> {
  * This should be called in afterEach hooks
  */
 export async function clearTestData(): Promise<void> {
-  Character.destroy({ where: {}, force: true });
-  Origin.destroy({ where: {}, force: true });
+  await Character.destroy({ where: {}, force: true });
+  await Origin.destroy({ where: {}, force: true });
 }
 
 /**

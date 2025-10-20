@@ -24,6 +24,7 @@ describe("CharacterResolver", () => {
   let characterResolver: CharacterResolver;
 
   beforeAll(async () => {
+    process.env["NODE_ENV"] = "test";
     await initializeTestDb();
   });
 
@@ -41,6 +42,7 @@ describe("CharacterResolver", () => {
 
   afterAll(async () => {
     await closeTestDb();
+    process.env["NODE_ENV"] = "development";
   });
 
   describe("characters()", () => {
@@ -317,8 +319,12 @@ describe("CharacterResolver", () => {
     it("should return null when character not found", async () => {
       mockedCacheService.getCachedData.mockResolvedValue(null);
       mockedCacheService.generateCacheKey.mockReturnValue("character:id:999");
-
-      const result = await characterResolver.character({}, { id: 999 });
+      let result: any;
+      try {
+        result = await characterResolver.character({}, { id: 999 });
+      } catch (error) {
+        console.error(error);
+      }
 
       expect(result).toBeNull();
       expect(mockedCacheService.setCachedData).not.toHaveBeenCalled();
