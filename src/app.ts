@@ -6,6 +6,7 @@ import compression from "compression";
 import { createServer } from "http";
 import { createGraphQLServer, applyGraphQLMiddleware } from "./graphql/server";
 import { requestLogger } from "./middleware/requestLogger";
+import { setupSwagger } from "./config/swagger";
 
 const app = express();
 const httpServer = createServer(app);
@@ -16,6 +17,9 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(compression());
 app.use(requestLogger);
+
+// Initialize Swagger
+setupSwagger(app); // Call the setupSwagger function
 
 // Initialize GraphQL server
 export const startServer = async () => {

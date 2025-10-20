@@ -141,3 +141,6 @@ query SearchCharacters {
   ```
 
 You can interact with the API using tools like [Apollo Studio Explorer](https://studio.apollographql.com/sandbox/explorer) or any GraphQL client.
+
+### Swagger documentation
+Access to Swagger at: [http://localhost:4000/api-docs](http://localhost:4000/api-docs)
