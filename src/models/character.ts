@@ -8,7 +8,7 @@ interface CharacterAttributes {
   species: string;
   gender: string;
   name: string;
-  origin_id: number;
+  origin_id: number | null;
 }
 
 interface CharacterCreationAttributes
@@ -24,7 +24,7 @@ export class Character
   public species!: string;
   public gender!: string;
   public name!: string;
-  public origin_id!: number;
+  public origin_id!: number | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
