@@ -58,7 +58,7 @@ export async function syncCharacters(): Promise<void> {
     for (const char of characters) {
       // Handle origin
       let originId: number | null = null;
-      if (char.origin) {
+      if (char.origin && char.origin.id) {
         const [origin] = await Origin.upsert({
           api_id: char.origin.id,
           name: char.origin.name,

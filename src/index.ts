@@ -12,7 +12,8 @@ let characterSyncJob: cron.ScheduledTask | null = null;
  * Setup scheduled jobs
  */
 const setupCronJobs = (): void => {
-  characterSyncJob = cron.schedule('0 */12 * * *', async () => {
+  const CRON_SCHEDULE = process.env["CRON_SCHEDULE"] || '0 */12 * * *';
+  characterSyncJob = cron.schedule(CRON_SCHEDULE, async () => {
     const startTime = new Date();
     console.log(`[${startTime.toISOString()}] ⏱ Starting character sync...`);
 
